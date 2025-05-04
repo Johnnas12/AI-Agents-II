@@ -1,0 +1,6 @@
+{
+    "tracked_keywords": ["bitcoin", "ethereum", "nasdaq", "tesla"],
+    "notification_threshold": 5,
+    "output_file": "../shared/results/market_trends.json"
+  }
+  
