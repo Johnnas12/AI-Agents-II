@@ -1,0 +1,18 @@
+{
+  "bitcoin": {
+    "price_usd": 95513,
+    "change_24h": "-0.91%"
+  },
+  "ethereum": {
+    "price_usd": 1827.11,
+    "change_24h": "-0.42%"
+  },
+  "solana": {
+    "price_usd": 145.99,
+    "change_24h": "-1.64%"
+  },
+  "notcoin": {
+    "price_usd": 0.00223878,
+    "change_24h": "-2.94%"
+  }
+}
