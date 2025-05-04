@@ -3,7 +3,7 @@ import json
 from pathlib import Path
 from dotenv import load_dotenv
 import google.generativeai as genai
-from market_watcher import fetch_crypto_data, get_available_coins
+from .market_watcher import fetch_crypto_data, get_available_coins
 
 # Load env vars
 load_dotenv()
