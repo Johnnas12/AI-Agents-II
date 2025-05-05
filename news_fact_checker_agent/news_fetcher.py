@@ -21,7 +21,6 @@ def fetch_trending_crypto_news(page_size=10):
         response = requests.get(BASE_URL, params=params)
         response.raise_for_status()
         data = response.json()
-
         articles = [
             {
                 "id": idx + 1,
