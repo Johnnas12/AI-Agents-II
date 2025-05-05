@@ -2,6 +2,7 @@ from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
 from market_trend_agent.market_watcher import fetch_crypto_data, get_available_coins, top_10_coins
 from market_trend_agent.market_summary_agent import generate_market_summary
+from news_fact_checker_agent.news_fetcher import fetch_trending_crypto_news
 import os
 from dotenv import load_dotenv
 import google.generativeai as genai
@@ -66,6 +67,14 @@ def tops():
     if not coins:
         raise HTTPException(status_code=404, detail="No top 10 coins found.")
     return {"top_10_coins": coins}
+
+
+@app.get("/trending-news")
+def trending_news():
+    news = fetch_trending_crypto_news()
+    if not news:
+        raise HTTPException(status_code=404, detail="No trending news found.")
+    return {"trending_news": news}
 
 # Test route
 @app.get("/")
