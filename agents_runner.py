@@ -1,8 +1,9 @@
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, Request,  HTTPException
 from pydantic import BaseModel
 from market_trend_agent.market_watcher import fetch_crypto_data, get_available_coins, top_10_coins
 from market_trend_agent.market_summary_agent import generate_market_summary
 from news_fact_checker_agent.news_fetcher import fetch_trending_crypto_news
+from news_fact_checker_agent.fact_checker import run_fact_check_with_gemini_full
 import os
 from dotenv import load_dotenv
 import google.generativeai as genai
@@ -76,6 +77,19 @@ def trending_news():
         raise HTTPException(status_code=404, detail="No trending news found.")
     return {"trending_news": news}
 
+@app.post("/fact-check")
+async def fact_check_article(request: Request):
+    try:
+        article_data = await request.json()
+        result = run_fact_check_with_gemini_full(article_data)
+
+        return {
+            "title": article_data.get("title", "Untitled"),
+            "fact_check_result": result
+        }
+
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
 # Test route
 @app.get("/")
 def root():
