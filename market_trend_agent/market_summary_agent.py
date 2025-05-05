@@ -30,6 +30,7 @@ def generate_market_summary(data):
     market_insights = json.dumps(data, indent=2)
     prompt = f"""
 You are a financial market analyst AI. Based on the following real-time crypto market data, provide a concise, human-readable summary of the market trends. Highlight which coins are gaining, which are losing, and overall sentiment.
+Give short and clear insights, avoiding technical jargon. Use bullet points for clarity. give short BUY or SELL recommendations for each coin. use emojis to make it more engaging. and use numerical values for price and change.
 
 Market Data:
 {market_insights}
