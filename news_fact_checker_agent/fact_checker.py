@@ -34,32 +34,28 @@ def scrape_article_content(url):
     
 
 
-def run_fact_check_with_gemini(article):
+def run_fact_check_with_gemini_full(article):
+    scraped_content = scrape_article_content(article["url"])
+
     prompt = f"""
-You are a fact-checking AI assistant. Given the following news article content, evaluate its legitimacy by cross-referencing known information. 
-Provide:
-- Verdict: Legitimate, Likely Legitimate, Unverified, or Fake
-- Legitimacy Percentage (0-100)
-- 3-5 bullet point reasoning statements.
+You are a fact-checking AI assistant. Evaluate the following news article for factual legitimacy by considering:
 
-Article Content:
-"{article}"
+- Source: {article['source']}
+- Source URL: {article['url']}
+- Title: {article['title']}
+- Description: {article['description']}
+- Provided Content: {article['content']}
+- Scraped Full Article Content: {scraped_content}
 
-Respond clearly in readable text. No JSON formatting needed.
+Fact Check Instructions:
+- Provide a Verdict: Legitimate, Likely Legitimate, Unverified, or Fake.
+- Legitimacy Score: 0-100%
+- 3-5 bullet-point reasoning points explaining your decision.
+
+Respond in clear readable text — no JSON formatting.
 """
 
     model = genai.GenerativeModel("gemini-1.5-pro")
     response = model.generate_content(prompt)
 
     return response.text.strip()
-
-# Main logic
-def main():
-    news_items = load_news_from_config()
-
-    for news in news_items:
-        print(f"\n📖 Title: {news['title']}")
-        result = run_fact_check_with_gemini(news['content'])
-        print(f"📝 Fact Check Result:\n{result}")
-if __name__ == "__main__":
-    main()
