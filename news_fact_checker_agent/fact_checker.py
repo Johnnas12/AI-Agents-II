@@ -52,7 +52,7 @@ Fact Check Instructions:
 - Legitimacy Score: 0-100%
 - 3-5 bullet-point reasoning points explaining your decision.
 
-Respond in clear readable text — no JSON formatting.
+Respond in clear readable text — no JSON formatting. also use emojis to make it more engaging.
 """
 
     model = genai.GenerativeModel("gemini-1.5-pro")
