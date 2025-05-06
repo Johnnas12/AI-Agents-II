@@ -2,6 +2,7 @@ from fastapi import FastAPI, Request,  HTTPException
 from pydantic import BaseModel
 from market_trend_agent.market_watcher import fetch_crypto_data, get_available_coins, top_10_coins
 from market_trend_agent.market_summary_agent import generate_market_summary
+from market_trend_agent.digest import send_crypto_digest_email
 from news_fact_checker_agent.news_fetcher import fetch_trending_crypto_news
 from news_fact_checker_agent.fact_checker import run_fact_check_with_gemini_full
 import os
@@ -38,6 +39,10 @@ app.add_middleware(
 # Request model
 class MarketRequest(BaseModel):
     tracked_keywords: list[str]
+
+class DigestRequest(BaseModel):
+    coins_of_interest: list
+    recipient_email: str
 
 # Endpoint — get available crypto coin IDs
 @app.get("/available-coins")
@@ -91,7 +96,22 @@ async def fact_check_article(request: Request):
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
     
+class DigestRequest(BaseModel):
+    coins_of_interest: list
+    recipient_email: str
 
+
+@app.post("/send-digest")
+async def send_daily_digest(request: DigestRequest):
+    try:
+        result = send_crypto_digest_email(
+            request.coins_of_interest,
+            request.recipient_email
+        )
+        return result
+
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
 
 # Test route
 @app.get("/")
