@@ -2,8 +2,8 @@ import os
 from dotenv import load_dotenv
 import google.generativeai as genai
 
-from email_utils import send_email
-from market_watcher import fetch_crypto_data
+from .email_utils import send_email
+from .market_watcher import fetch_crypto_data
 
 load_dotenv()
 
