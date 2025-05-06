@@ -90,6 +90,9 @@ async def fact_check_article(request: Request):
 
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
+    
+
+
 # Test route
 @app.get("/")
 def root():

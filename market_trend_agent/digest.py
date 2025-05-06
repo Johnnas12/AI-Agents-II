@@ -1,25 +1,34 @@
-import google.generativeai as genai
 import os
-from email_utils import send_email
-from market_watcher import fetch_crypto_data, get_available_coins
 from dotenv import load_dotenv
+import google.generativeai as genai
 
-
+from email_utils import send_email
+from market_watcher import fetch_crypto_data
 
 load_dotenv()
 
+# Configure Gemini API
 api_key = os.getenv("GEMINI_API_KEY")
 genai.configure(api_key=api_key)
 model = genai.GenerativeModel('gemini-1.5-pro')
 
 
-def generate_digest_email_content(prices):
+def send_crypto_digest_email(coins_of_interest, recipient_email):
     """
-    Generates a digest email message from crypto prices using Gemini LLM.
+    Fetch crypto prices, generate digest content via Gemini, and send email to recipient.
     """
-    price_summary = "\n".join([f"{coin.capitalize()}: ${data['price_usd']} (24h Change: {data['change_24h']})" for coin, data in prices.items()])
+    print(f"📊 Fetching market data for: {', '.join(coins_of_interest)}")
+    prices = fetch_crypto_data(coins_of_interest)
+    if not prices:
+        return {"status": "Failed", "message": "No prices fetched. Exiting."}
 
+    # Build price summary string
+    price_summary = "\n".join(
+        [f"{coin.capitalize()}: ${data['price_usd']} (24h Change: {data['change_24h']})"
+         for coin, data in prices.items()]
+    )
 
+    # Build prompt for Gemini
     prompt = f"""
     You are a financial market analyst AI assistant. Write a friendly, clear, and engaging daily email digest summarizing today's cryptocurrency prices for the following coins:
 
@@ -35,29 +44,26 @@ def generate_digest_email_content(prices):
 
     try:
         response = model.generate_content(prompt)
+        email_content = response.text.strip() if response and response.text else "No content generated."
 
-        if response and response.text:
-            return response.text.strip()
-        else:
-            return "No content generated."
     except Exception as e:
         print("❌ Error generating email content:", e)
-        return "Failed to generate digest message."
-    
+        return {"status": "Failed", "message": str(e)}
 
-# User-selected coins for digest
-coins_of_interest = ["bitcoin", "ethereum", "dogecoin"]
+    try:
+        subject = "📈 Your Daily Crypto Market Digest"
+        send_email(subject, email_content, recipient_email)
+        return {
+            "status": "Success",
+            "coins_tracked": coins_of_interest,
+            "email_sent_to": recipient_email
+        }
+    except Exception as e:
+        print("❌ Error sending email:", e)
+        return {"status": "Failed", "message": str(e)}
 
-# 1️⃣ Fetch Prices
-prices = fetch_crypto_data(coins_of_interest)
-if not prices:
-    print("No prices fetched. Exiting.")
-    exit()
-
-# 2️⃣ Generate Digest via LLM
-email_content = generate_digest_email_content(prices)
-
-# 3️⃣ Send Email
-recipient_email = "yohanesmesfin3@gmail.com"
-subject = "📈 Your Daily Crypto Market Digest"
-send_email(subject, email_content, recipient_email)
+if __name__ == "__main__":
+    coins = ["bitcoin", "ethereum", "dogecoin"]
+    recipient = "yohanesmesfin3@gmail.com"
+    result = send_crypto_digest_email(coins, recipient)
+    print(result)
