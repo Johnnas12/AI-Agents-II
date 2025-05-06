@@ -4,6 +4,7 @@ import google.generativeai as genai
 
 from .email_utils import send_email
 from .market_watcher import fetch_crypto_data
+from datetime import datetime
 
 load_dotenv()
 
@@ -11,6 +12,8 @@ load_dotenv()
 api_key = os.getenv("GEMINI_API_KEY")
 genai.configure(api_key=api_key)
 model = genai.GenerativeModel('gemini-1.5-pro')
+
+today = datetime.today().strftime("%Y-%m-%d")
 
 
 def send_crypto_digest_email(coins_of_interest, recipient_email):
@@ -30,7 +33,7 @@ def send_crypto_digest_email(coins_of_interest, recipient_email):
 
     # Build prompt for Gemini
     prompt = f"""
-    You are a financial market analyst AI assistant. Write a friendly, clear, and engaging daily email digest summarizing today's cryptocurrency prices for the following coins:
+    You are a financial market analyst AI assistant. Write a friendly, clear, and engaging daily email digest summarizing today's {today} cryptocurrency prices for the following coins:
 
     {price_summary}
 
